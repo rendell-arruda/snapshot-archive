@@ -1,0 +1,14 @@
+{'Snapshots': [
+        {'Description': 'snapshot-vol-0fb49819a0f1f66a3', 'Encrypted': False, 'OwnerId': '471112936182', 'Progress': '100%', 'SnapshotId': 'snap-0a59258eb6e6c506a', 'StartTime': datetime.datetime(2025,
+            5,
+            11,
+            21,
+            33,
+            41,
+            482000, tzinfo=tzutc()), 'State': 'completed', 'VolumeId': 'vol-0fb49819a0f1f66a3', 'VolumeSize': 8, 'StorageTier': 'standard'
+        }
+    ], 'ResponseMetadata': {'RequestId': '0d5ab60b-3b6e-4f4e-8563-137f4e9ce00a', 'HTTPStatusCode': 200, 'HTTPHeaders': {'x-amzn-requestid': '0d5ab60b-3b6e-4f4e-8563-137f4e9ce00a', 'cache-control': 'no-cache, no-store', 'strict-transport-security': 'max-age=31536000; includeSubDomains', 'content-type': 'text/xml;charset=UTF-8', 'content-length': '752', 'date': 'Sun,
+            11 May 2025 21: 37: 28 GMT', 'server': 'AmazonEC2'
+        }, 'RetryAttempts': 0
+    }
+}
