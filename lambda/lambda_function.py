@@ -1,10 +1,6 @@
 import boto3
 
 def assume_role(account_id, role_name):
-    print("Assuming role...")
-    print(f"Account ID: {account_id}, Role Name: {role_name}")
-    # Cria um cliente STS
-    # Esta função é um espaço reservado para a lógica real de suposição de função.
     sts_client = boto3.client('sts')
 
     role_arn = f'arn:aws:iam::{account_id}:role/{role_name}'
@@ -24,23 +20,26 @@ def assume_role(account_id, role_name):
 
     return session
 
-def lambda_handler(event, context):
-    print("Inicializing Lambda function...")
-    return {
-        'statusCode': 200,
-        'body': 'Lambda executed success!'
-    }
+def listar_snapshots_para_arquivar(session):
+    ec2 = session.client('ec2')
+    #busca por snapshots na conta
+    response = ec2.describe_snapshots(OwnerIds=["self"])
+    snapshots = response.get("Snapshots", [])
+    
+    print(f"O total de Snapshots encontrados: {len(snapshots)}")
+    return snapshots    
  
 if __name__ == "__main__":
     # Substitua com os dados reais
-    destino_account_id = "...."
+    destino_account_id = 471112936182
     role_name = "SnapshotArchiveRole"
 
+    # Assume a role e cria a sessão
     session = assume_role(destino_account_id, role_name)
 
-    # Testa chamando EC2 na outra conta
-    ec2 = session.client('ec2')
-    snapshots = ec2.describe_snapshots(OwnerIds=["self"])  # vai falhar se não houver snapshots ou permissão
-    snapshot_name = snapshots.get("Snapshots", [])[0].get("Description", "No description")
-    print("Snapshot ID:", snapshot_name)
-    # print("Snapshots encontrados:", len(snapshots.get("Snapshots", [])))
+    # Lista os snapshots
+    snapshots = listar_snapshots_para_arquivar(session)
+    
+    #imprime os snapshots
+    for snapshot in snapshots:
+        print(f"Snapshot ID: {snapshot['SnapshotId']}, Description: {snapshot.get('Description', 'No description')}")
