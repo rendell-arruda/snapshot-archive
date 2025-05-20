@@ -55,28 +55,38 @@ def filter_snapshots_standart(session, snapshots):
             snapshots_standart.append(snap)
 
     return snapshots_standart  # Retorna apenas os snapshots padrão
+
+def arquivar_snapshots(session, snapshots):
+    # Cria o cliente EC2 com a sessão autenticada (com assume role, se aplicável)
+    ec2 = session.client('ec2')
+
+    for snap in snapshots:
+        snapshot_id = snap['SnapshotId']
+        try:
+            # Chama a API para mover o snapshot para o tier de arquivamento
+            response = ec2.modify_snapshot_tier(
+                SnapshotId=snapshot_id,
+                StorageTier='archive'  # Define o novo tier como "archive"
+            )
+            print(f"Snapshot {snapshot_id} enviado para o tier 'archive' com sucesso.")
+        except Exception as e:
+            print(f"Erro ao tentar arquivar snapshot {snapshot_id}: {str(e)}")
  
 # Este bloco só será executado se o script for rodado diretamente (não importado como módulo)
 if __name__ == "__main__":
-    # ID da conta que possui a role a ser assumida
     destino_account_id = 471112936182
-
-    # Nome da role que a função vai assumir
     role_name = "SnapshotArchiveRole"
 
-    # Assume a role e cria a sessão autenticada
     session = assume_role(destino_account_id, role_name)
-
-    # Lista todos os snapshots da conta
     todos_snapshots = listar_snapshots_para_arquivar(session)
-    
-    # Filtra apenas os snapshots que estão no tier padrão
     standart_snapshots = filter_snapshots_standart(session, todos_snapshots)
-    
-    # Imprime informações dos snapshots filtrados
+
     for snap in standart_snapshots:
         print(
             f"Snapshot ID: {snap['SnapshotId']}, "
             f"Description: {snap.get('Description', 'No description')} "
             f"está no tier {snap.get('StorageTier', 'desconhecido')}"
         )
+
+    # Arquiva os snapshots padrão
+    arquivar_snapshots(session, standart_snapshots)
